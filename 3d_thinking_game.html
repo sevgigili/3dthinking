@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3 Boyutlu Düşünme Oyunu</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #e74c3c;
+            --secondary-dark: #c0392b;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --light: #f5f5f5;
+            --dark: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        #start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .welcome-text {
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            max-width: 600px;
+        }
+
+        .game-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .option-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .player-input {
+            margin-top: 20px;
+            display: none;
+            width: 100%;
+        }
+
+        .player-list {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 50px;
+            background-color: white;
+        }
+
+        .player-item {
+            padding: 5px 10px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 20px;
+            margin: 5px;
+            display: inline-block;
+        }
+
+        #game-screen {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .clock-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+
+        .score-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .current-player {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+        }
+
+        .question-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .shape-display {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 20px;
+            perspective: 1000px;
+        }
+
+        .shape-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+        }
+
+        .cube {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            transform-style: preserve-3d;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(52, 152, 219, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            transform-style: preserve-3d;
+        }
+
+        .face-front {
+            transform: translateZ(20px);
+        }
+
+        .face-back {
+            transform: translateZ(-20px) rotateY(180deg);
+        }
+
+        .face-right {
+            transform: translateX(20px) rotateY(90deg);
+        }
+
+        .face-left {
+            transform: translateX(-20px) rotateY(-90deg);
+        }
+
+        .face-top {
+            transform: translateY(-20px) rotateX(90deg);
+        }
+
+        .face-bottom {
+            transform: translateY(20px) rotateX(-90deg);
+        }
+
+        .view-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .view-btn {
+            padding: 8px 15px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .view-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .active-view {
+            background-color: var(--secondary);
+        }
+
+        .active-view:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        .options-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            padding: 10px 20px;
+            background-color: var(--light);
+            border: 2px solid var(--primary);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            min-width: 100px;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 10px 0;
+            min-height: 30px;
+        }
+
+        .correct {
+            color: var(--success);
+        }
+
+        .incorrect {
+            color: var(--secondary);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .hint-container {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        #results-screen {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .results-header {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .results-stats {
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+        }
+
+        .results-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .player-results {
+            margin: 20px 0;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .player-score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .winner {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .instructions-screen {
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .instructions-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .instructions-content h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .instructions-content p, .instructions-content ul {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .instructions-content ul {
+            padding-left: 20px;
+        }
+
+        .back-button {
+            margin-top: 20px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .shape-display {
+                width: 250px;
+                height: 250px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse-animation {
+            animation: pulse 0.5s;
+        }
+
+        .level-display {
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>3 Boyutlu Düşünme Oyunu</h1>
+            <p>7. Sınıf - Geometri</p>
+        </header>
+        
+        <div class="content">
+            <!-- Start Screen -->
+            <div id="start-screen" class="screen">
+                <div class="welcome-text">
+                    <p>Üç boyutlu cisimleri farklı açılardan görebilme ve birim küp sayılarını bulma becerilerinizi test edin! Hızlı düşünün, doğru cevaplar verin ve arkadaşlarınızla yarışın!</p>
+                </div>
+                
+                <div class="game-options">
+                    <div class="option-group">
+                        <span class="option-label">Oyun Modu:</span>
+                        <div class="option-buttons">
+                            <button id="single-player-btn" class="btn btn-primary">Tek Oyuncu</button>
+                            <button id="multi-player-btn" class="btn">Çok Oyuncu</button>
+                        </div>
+                    </div>
+                    
+                    <div class="option-group">
+                        <span class="option-label">Zorluk Seviyesi:</span>
+                        <div class="option-buttons">
+                            <button id="level-easy-btn" class="btn btn-primary">Kolay</button>
+                            <button id="level-medium-btn" class="btn">Orta</button>
+                            <button id="level-hard-btn" class="btn">Zor</button>
+                        </div>
+                    </div>
+                    
+                    <div class="option-group">
+                        <span class="option-label">Soru Sayısı:</span>
+                        <div class="option-buttons">
+                            <button id="questions-5-btn" class="btn btn-primary">5</button>
+                            <button id="questions-10-btn" class="btn">10</button>
+                            <button id="questions-15-btn" class="btn">15</button>
+                        </div>
+                    </div>
+                    
+                    <div class="player-input">
+                        <span class="option-label">Oyuncu İsimleri:</span>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="player-name-input" placeholder="Oyuncu adı girin">
+                            <button id="add-player-btn" class="btn btn-primary">Ekle</button>
+                        </div>
+                        <div class="player-list" id="player-list"></div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button id="start-game-btn" class="btn btn-success">Oyunu Başlat</button>
+                    <button id="show-instructions-btn" class="btn btn-warning">Nasıl Oynanır?</button>
+                </div>
+            </div>
+            
+            <!-- Game Screen -->
+            <div id="game-screen" class="screen">
+                <div class="game-header">
+                    <div class="timer">
+                        <svg class="clock-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span id="timer-display">30</span>
+                    </div>
+                    <div id="current-player" class="current-player"></div>
+                    <div class="score-display">Puan: <span id="score-display">0</span></div>
+                </div>
+                
+                <div class="game-container">
+                    <div class="level-display" id="level-display">Seviye 1/10</div>
+                    
+                    <div class="question-container">
+                        <div class="question-text" id="question-text">Yapının ön görünümünde kaç birim kare vardır?</div>
+                    </div>
+                    
+                    <div class="shape-display">
+                        <div id="shape-container" class="shape-container"></div>
+                    </div>
+                    
+                    <div class="view-buttons">
+                        <button class="view-btn active-view" data-view="front">Ön</button>
+                        <button class="view-btn" data-view="side">Sağ</button>
+                        <button class="view-btn" data-view="top">Üst</button>
+                        <button class="view-btn" data-view="back">Arka</button>
+                        <button class="view-btn" data-view="left">Sol</button>
+                    </div>
+                    
+                    <div class="options-container" id="options-container">
+                        <!-- Options will be dynamically added here -->
+                    </div>
+                    
+                    <div class="feedback" id="feedback"></div>
+                    
+                    <div class="hint-container">
+                        <button id="hint-btn" class="btn btn-warning">İpucu: Yapıyı Döndür</button>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="next-question-btn" class="btn btn-primary" style="display: none;">Sonraki Soru</button>
+                        <button id="end-game-btn" class="btn btn-secondary">Oyunu Bitir</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Screen -->
+            <div id="results-screen" class="screen">
+                <h2 class="results-header">Oyun Bitti!</h2>
+                
+                <div class="results-stats">
+                    <p>Toplam Soru: <span id="total-questions">0</span></p>
+                    <p>Doğru Cevap: <span id="correct-answers">0</span></p>
+                    <div class="results-score">
+                        Puan: <span id="final-score">0</span>
+                    </div>
+                </div>
+                
+                <div id="player-results" class="player-results">
+                    <!-- Player results will be dynamically added here -->
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button id="play-again-btn" class="btn btn-primary">Tekrar Oyna</button>
+                    <button id="back-to-menu-btn" class="btn btn-secondary">Ana Menüye Dön</button>
+                </div>
+            </div>
+            
+            <!-- Instructions Screen -->
+            <div id="instructions-screen" class="screen instructions-screen">
+                <div class="instructions-content">
+                    <h2>Nasıl Oynanır?</h2>
+                    <p>3 Boyutlu Düşünme Oyunu, üç boyutlu cisimlerin farklı yönlerden görünümlerini ve birim küp sayılarını tahmin etme becerilerinizi geliştirmek için tasarlanmış interaktif bir oyundur.</p>
+                    
+                    <h3>Oyun Kuralları:</h3>
+                    <ul>
+                        <li>Her soruda 3 boyutlu bir yapı gösterilecektir.</li>
+                        <li>Yapının belirli bir yönden görünümünde kaç birim kare olduğunu veya yapıdaki toplam birim küp sayısını tahmin etmeniz istenecektir.</li>
+                        <li>Verilen seçenekler arasından doğru cevabı bulun ve tıklayın.</li>
+                        <li>Her soru için süre sınırı vardır. Süre bittiğinde otomatik olarak yanlış cevap verilmiş sayılır.</li>
+                        <li>Doğru cevap için puan kazanır, yanlış cevap için puan kaybedersiniz.</li>
+                        <li>Zorlanırsanız "İpucu: Yapıyı Döndür" butonunu kullanabilirsiniz. Bu, yapıyı farklı açılardan görmenizi sağlar.</li>
+                    </ul>
+                    
+                    <h3>Görünüm Butonları:</h3>
+                    <ul>
+                        <li><strong>Ön:</strong> Yapının ön yüzünden görünümü</li>
+                        <li><strong>Sağ:</strong> Yapının sağ tarafından görünümü</li>
+                        <li><strong>Üst:</strong> Yapının üst tarafından görünümü</li>
+                        <li><strong>Arka:</strong> Yapının arka tarafından görünümü</li>
+                        <li><strong>Sol:</strong> Yapının sol tarafından görünümü</li>
+                    </ul>
+
+                    <h3>Zorluk Seviyeleri:</h3>
+                    <ul>
+                        <li><strong>Kolay:</strong> Basit yapılar ve daha uzun süre</li>
+                        <li><strong>Orta:</strong> Daha karmaşık yapılar ve orta seviye süre</li>
+                        <li><strong>Zor:</strong> Karmaşık yapılar ve kısa süre</li>
+                    </ul>
+                    
+                    <p>İyi oyunlar!</p>
+                    
+                    <button id="back-from-instructions-btn" class="btn btn-secondary back-button">Geri Dön</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game variables
+            let gameMode = 'single'; // single or multi
+            let difficultyLevel = 'easy'; // easy, medium, hard
+            let numberOfQuestions = 5;
+            let players = [];
+            let currentPlayerIndex = 0;
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let playerScores = {};
+            let correctAnswers = 0;
+            let currentTimer;
+            let timerValue;
+            let questions = [];
+            let currentShape = null;
+            let currentView = 'front';
+            let rotationEnabled = false;
+            let questionStartTime;
+            let questionType; // 'view' or 'count'
+            
+            // Elements
+            const startScreen = document.getElementById('start-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const resultsScreen = document.getElementById('results-screen');
+            const instructionsScreen = document.getElementById('instructions-screen');
+            
+            const singlePlayerBtn = document.getElementById('single-player-btn');
+            const multiPlayerBtn = document.getElementById('multi-player-btn');
+            const levelEasyBtn = document.getElementById('level-easy-btn');
+            const levelMediumBtn = document.getElementById('level-medium-btn');
+            const levelHardBtn = document.getElementById('level-hard-btn');
+            const questions5Btn = document.getElementById('questions-5-btn');
+            const questions10Btn = document.getElementById('questions-10-btn');
+            const questions15Btn = document.getElementById('questions-15-btn');
+            const playerInput = document.querySelector('.player-input');
+            const playerNameInput = document.getElementById('player-name-input');
+            const addPlayerBtn = document.getElementById('add-player-btn');
+            const playerList = document.getElementById('player-list');
+            const startGameBtn = document.getElementById('start-game-btn');
+            const showInstructionsBtn = document.getElementById('show-instructions-btn');
+            
+            const timerDisplay = document.getElementById('timer-display');
+            const currentPlayerDisplay = document.getElementById('current-player');
+            const scoreDisplay = document.getElementById('score-display');
+            const questionText = document.getElementById('question-text');
+            const shapeContainer = document.getElementById('shape-container');
+            const optionsContainer = document.getElementById('options-container');
+            const feedbackDisplay = document.getElementById('feedback');
+            const hintBtn = document.getElementById('hint-btn');
+            const nextQuestionBtn = document.getElementById('next-question-btn');
+            const endGameBtn = document.getElementById('end-game-btn');
+            const levelDisplay = document.getElementById('level-display');
+            
+            const totalQuestionsDisplay = document.getElementById('total-questions');
+            const correctAnswersDisplay = document.getElementById('correct-answers');
+            const finalScoreDisplay = document.getElementById('final-score');
+            const playerResultsDisplay = document.getElementById('player-results');
+            const playAgainBtn = document.getElementById('play-again-btn');
+            const backToMenuBtn = document.getElementById('back-to-menu-btn');
+            
+            const backFromInstructionsBtn = document.getElementById('back-from-instructions-btn');
+            
+            // Game setup button handlers
+            singlePlayerBtn.addEventListener('click', function() {
+                setActiveButton([singlePlayerBtn, multiPlayerBtn], singlePlayerBtn);
+                gameMode = 'single';
+                playerInput.style.display = 'none';
+            });
+            
+            multiPlayerBtn.addEventListener('click', function() {
+                setActiveButton([singlePlayerBtn, multiPlayerBtn], multiPlayerBtn);
+                gameMode = 'multi';
+                playerInput.style.display = 'block';
+            });
+            
+            levelEasyBtn.addEventListener('click', function() {
+                setActiveButton([levelEasyBtn, levelMediumBtn, levelHardBtn], levelEasyBtn);
+                difficultyLevel = 'easy';
+            });
+            
+            levelMediumBtn.addEventListener('click', function() {
+                setActiveButton([levelEasyBtn, levelMediumBtn, levelHardBtn], levelMediumBtn);
+                difficultyLevel = 'medium';
+            });
+            
+            levelHardBtn.addEventListener('click', function() {
+                setActiveButton([levelEasyBtn, levelMediumBtn, levelHardBtn], levelHardBtn);
+                difficultyLevel = 'hard';
+            });
+            
+            questions5Btn.addEventListener('click', function() {
+                setActiveButton([questions5Btn, questions10Btn, questions15Btn], questions5Btn);
+                numberOfQuestions = 5;
+            });
+            
+            questions10Btn.addEventListener('click', function() {
+                setActiveButton([questions5Btn, questions10Btn, questions15Btn], questions10Btn);
+                numberOfQuestions = 10;
+            });
+            
+            questions15Btn.addEventListener('click', function() {
+                setActiveButton([questions5Btn, questions10Btn, questions15Btn], questions15Btn);
+                numberOfQuestions = 15;
+            });
+            
+            addPlayerBtn.addEventListener('click', function() {
+                const playerName = playerNameInput.value.trim();
+                if (playerName && !players.includes(playerName)) {
+                    players.push(playerName);
+                    playerScores[playerName] = 0;
+                    updatePlayerList();
+                    playerNameInput.value = '';
+                }
+            });
+            
+            startGameBtn.addEventListener('click', function() {
+                if (gameMode === 'multi' && players.length < 2) {
+                    alert('Çok oyunculu mod için en az 2 oyuncu ekleyin!');
+                    return;
+                }
+                
+                initializeGame();
+                showScreen(gameScreen);
+            });
+            
+            showInstructionsBtn.addEventListener('click', function() {
+                showScreen(instructionsScreen);
+            });
+            
+            backFromInstructionsBtn.addEventListener('click', function() {
+                showScreen(startScreen);
+            });
+            
+            // View buttons
+            document.querySelectorAll('.view-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (rotationEnabled) {
+                        document.querySelectorAll('.view-btn').forEach(btn => {
+                            btn.classList.remove('active-view');
+                        });
+                        this.classList.add('active-view');
+                        
+                        currentView = this.dataset.view;
+                        updateShapeView();
+                    }
+                });
+            });
+            
+            // Game action buttons
+            hintBtn.addEventListener('click', function() {
+                rotationEnabled = !rotationEnabled;
+                
+                if (rotationEnabled) {
+                    hintBtn.textContent = 'İpucu Aktif: Yapıyı İnceleyin';
+                    hintBtn.classList.add('btn-success');
+                    hintBtn.classList.remove('btn-warning');
+                } else {
+                    hintBtn.textContent = 'İpucu: Yapıyı Döndür';
+                    hintBtn.classList.add('btn-warning');
+                    hintBtn.classList.remove('btn-success');
+                }
+            });
+            
+            nextQuestionBtn.addEventListener('click', function() {
+                if (currentQuestionIndex < questions.length - 1) {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                } else {
+                    endGame();
+                }
+            });
+            
+            endGameBtn.addEventListener('click', function() {
+                if (confirm('Oyunu sonlandırmak istediğinize emin misiniz?')) {
+                    endGame();
+                }
+            });
+            
+            playAgainBtn.addEventListener('click', function() {
+                resetGame();
+                initializeGame();
+                showScreen(gameScreen);
+            });
+            
+            backToMenuBtn.addEventListener('click', function() {
+                resetGame();
+                showScreen(startScreen);
+            });
+            
+            // Helper Functions
+            function setActiveButton(buttons, activeButton) {
+                buttons.forEach(button => {
+                    button.classList.remove('btn-primary');
+                });
+                activeButton.classList.add('btn-primary');
+            }
+            
+            function updatePlayerList() {
+                playerList.innerHTML = '';
+                players.forEach(player => {
+                    const playerItem = document.createElement('span');
+                    playerItem.classList.add('player-item');
+                    playerItem.textContent = player;
+                    playerList.appendChild(playerItem);
+                });
+            }
+            
+            function showScreen(screen) {
+                startScreen.style.display = 'none';
+                gameScreen.style.display = 'none';
+                resultsScreen.style.display = 'none';
+                instructionsScreen.style.display = 'none';
+                
+                screen.style.display = 'flex';
+            }
+            
+            function initializeGame() {
+                currentQuestionIndex = 0;
+                score = 0;
+                correctAnswers = 0;
+                
+                if (gameMode === 'single') {
+                    players = ['Oyuncu'];
+                    playerScores = { 'Oyuncu': 0 };
+                }
+                
+                currentPlayerIndex = 0;
+                updatePlayerDisplay();
+                
+                generateQuestions();
+                loadQuestion();
+            }
+            
+            function updatePlayerDisplay() {
+                if (gameMode === 'multi') {
+                    currentPlayerDisplay.textContent = `Sıra: ${players[currentPlayerIndex]}`;
+                } else {
+                    currentPlayerDisplay.textContent = '';
+                }
+            }
+            
+            function resetGame() {
+                clearInterval(currentTimer);
+                rotationEnabled = false;
+                currentView = 'front';
+                
+                if (gameMode === 'multi') {
+                    players = [];
+                    playerScores = {};
+                    updatePlayerList();
+                }
+            }
+            
+            function generateQuestions() {
+                questions = [];
+                
+                // Define the shapes based on difficulty
+                const shapesEasy = [
+                    // Shape 1: Simple 2x2x1 platform
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 0, y: 1, z: 0},
+                            {x: 1, y: 1, z: 0}
+                        ],
+                        views: {
+                            front: 2,
+                            side: 2,
+                            top: 4,
+                            back: 2,
+                            left: 2
+                        },
+                        count: 4
+                    },
+                    // Shape 2: Simple L shape
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 0, y: 1, z: 0}
+                        ],
+                        views: {
+                            front: 2,
+                            side: 2,
+                            top: 3,
+                            back: 2,
+                            left: 2
+                        },
+                        count: 3
+                    },
+                    // Shape 3: Simple 1x3 line
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 2, y: 0, z: 0}
+                        ],
+                        views: {
+                            front: 3,
+                            side: 1,
+                            top: 3,
+                            back: 3,
+                            left: 1
+                        },
+                        count: 3
+                    },
+                    // Shape 4: Simple T shape
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 2, y: 0, z: 0},
+                            {x: 1, y: 1, z: 0}
+                        ],
+                        views: {
+                            front: 3,
+                            side: 2,
+                            top: 4,
+                            back: 3,
+                            left: 2
+                        },
+                        count: 4
+                    },
+                    // Shape 5: Simple Stairs (2 steps)
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 1, y: 0, z: 1},
+                            {x: 2, y: 0, z: 1}
+                        ],
+                        views: {
+                            front: 3,
+                            side: 2,
+                            top: 4,
+                            back: 3,
+                            left: 2
+                        },
+                        count: 4
+                    }
+                ];
+                
+                const shapesMedium = [
+                    // Shape 1: 2x2x2 cube with 1 missing corner
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 0, y: 1, z: 0},
+                            {x: 0, y: 0, z: 1},
+                            {x: 1, y: 1, z: 0},
+                            {x: 1, y: 0, z: 1},
+                            {x: 0, y: 1, z: 1}
+                        ],
+                        views: {
+                            front: 4,
+                            side: 4,
+                            top: 4,
+                            back: 4,
+                            left: 4
+                        },
+                        count: 7
+                    },
+                    // Shape 2: A small pyramid
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 2, y: 0, z: 0},
+                            {x: 0, y: 1, z: 0},
+                            {x: 1, y: 1, z: 0},
+                            {x: 2, y: 1, z: 0},
+                            {x: 0, y: 2, z: 0},
+                            {x: 1, y: 2, z: 0},
+                            {x: 2, y: 2, z: 0},
+                            {x: 1, y: 1, z: 1}
+                        ],
+                        views: {
+                            front: 4,
+                            side: 4,
+                            top: 9,
+                            back: 4,
+                            left: 4
+                        },
+                        count: 10
+                    },
+                    // Shape 3: Z shape
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 0, y: 1, z: 0},
+                            {x: 1, y: 1, z: 0},
+                            {x: 1, y: 1, z: 1},
+                            {x: 1, y: 2, z: 1},
+                            {x: 2, y: 2, z: 1}
+                        ],
+                        views: {
+                            front: 4,
+                            side: 3,
+                            top: 5,
+                            back: 3,
+                            left: 4
+                        },
+                        count: 6
+                    },
+                    // Shape 4: C shape
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 0, y: 1, z: 0},
+                            {x: 0, y: 2, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 1, y: 2, z: 0},
+                            {x: 2, y: 0, z: 0},
+                            {x: 2, y: 1, z: 0},
+                            {x: 2, y: 2, z: 0}
+                        ],
+                        views: {
+                            front: 5,
+                            side: 3,
+                            top: 8,
+                            back: 5,
+                            left: 3
+                        },
+                        count: 8
+                    },
+                    // Shape 5: Small castle (tower and wall)
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 2, y: 0, z: 0},
+                            {x: 0, y: 0, z: 1},
+                            {x: 2, y: 0, z: 1},
+                            {x: 0, y: 0, z: 2},
+                            {x: 2, y: 0, z: 2}
+                        ],
+                        views: {
+                            front: 5,
+                            side: 3,
+                            top: 5,
+                            back: 5,
+                            left: 3
+                        },
+                        count: 7
+                    }
+                ];
+                
+                const shapesHard = [
+                    // Shape 1: 3D Tetris piece
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 0, y: 0, z: 1},
+                            {x: 0, y: 0, z: 2},
+                            {x: 1, y: 0, z: 1},
+                            {x: 2, y: 0, z: 1}
+                        ],
+                        views: {
+                            front: 5,
+                            side: 3,
+                            top: 5,
+                            back: 3,
+                            left: 3
+                        },
+                        count: 5
+                    },
+                    // Shape 2: Staggered staircase
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 1, y: 0, z: 1},
+                            {x: 2, y: 0, z: 1},
+                            {x: 2, y: 0, z: 2},
+                            {x: 3, y: 0, z: 2},
+                            {x: 0, y: 1, z: 0},
+                            {x: 1, y: 1, z: 1},
+                            {x: 2, y: 1, z: 2}
+                        ],
+                        views: {
+                            front: 6,
+                            side: 3,
+                            top: 6,
+                            back: 3,
+                            left: 6
+                        },
+                        count: 9
+                    },
+                    // Shape 3: Complex 3D shape
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 0, y: 1, z: 0},
+                            {x: 0, y: 2, z: 0},
+                            {x: 1, y: 2, z: 0},
+                            {x: 2, y: 2, z: 0},
+                            {x: 2, y: 1, z: 0},
+                            {x: 2, y: 0, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 1, y: 1, z: 1},
+                            {x: 1, y: 1, z: 2}
+                        ],
+                        views: {
+                            front: 6,
+                            side: 5,
+                            top: 9,
+                            back: 6,
+                            left: 5
+                        },
+                        count: 10
+                    },
+                    // Shape 4: Hollow cube
+                    {
+                        cubes: [
+                            // Bottom layer
+                            {x: 0, y: 0, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 2, y: 0, z: 0},
+                            {x: 0, y: 1, z: 0},
+                            {x: 2, y: 1, z: 0},
+                            {x: 0, y: 2, z: 0},
+                            {x: 1, y: 2, z: 0},
+                            {x: 2, y: 2, z: 0},
+                            // Middle layer
+                            {x: 0, y: 0, z: 1},
+                            {x: 2, y: 0, z: 1},
+                            {x: 0, y: 2, z: 1},
+                            {x: 2, y: 2, z: 1},
+                            // Top layer
+                            {x: 0, y: 0, z: 2},
+                            {x: 1, y: 0, z: 2},
+                            {x: 2, y: 0, z: 2},
+                            {x: 0, y: 1, z: 2},
+                            {x: 2, y: 1, z: 2},
+                            {x: 0, y: 2, z: 2},
+                            {x: 1, y: 2, z: 2},
+                            {x: 2, y: 2, z: 2}
+                        ],
+                        views: {
+                            front: 8,
+                            side: 8,
+                            top: 8,
+                            back: 8,
+                            left: 8
+                        },
+                        count: 20
+                    },
+                    // Shape 5: Complex structure
+                    {
+                        cubes: [
+                            {x: 0, y: 0, z: 0},
+                            {x: 0, y: 1, z: 0},
+                            {x: 0, y: 2, z: 0},
+                            {x: 1, y: 0, z: 0},
+                            {x: 1, y: 1, z: 1},
+                            {x: 1, y: 2, z: 2},
+                            {x: 2, y: 0, z: 0},
+                            {x: 2, y: 1, z: 0},
+                            {x: 2, y: 2, z: 0}
+                        ],
+                        views: {
+                            front: 5,
+                            side: 5,
+                            top: 7,
+                            back: 5,
+                            left: 5
+                        },
+                        count: 9
+                    }
+                ];
+                
+                // Select shapes based on difficulty
+                let selectedShapes = [];
+                
+                switch (difficultyLevel) {
+                    case 'easy':
+                        selectedShapes = shapesEasy;
+                        break;
+                    case 'medium':
+                        selectedShapes = shapesMedium;
+                        break;
+                    case 'hard':
+                        selectedShapes = shapesHard;
+                        break;
+                }
+                
+                // Generate questions by shuffling and selecting shapes
+                const shuffledShapes = [...selectedShapes].sort(() => Math.random() - 0.5);
+                
+                for (let i = 0; i < numberOfQuestions; i++) {
+                    // Use modulo to cycle through shapes if needed
+                    const shapeIndex = i % shuffledShapes.length;
+                    const shape = shuffledShapes[shapeIndex];
+                    
+                    // Alternate between view questions and count questions
+                    const type = i % 2 === 0 ? 'view' : 'count';
+                    
+                    if (type === 'view') {
+                        // For view questions, randomly select which view to ask about
+                        const views = ['front', 'side', 'top', 'back', 'left'];
+                        const viewIndex = Math.floor(Math.random() * views.length);
+                        const view = views[viewIndex];
+                        
+                        questions.push({
+                            type: 'view',
+                            shape: shape,
+                            view: view,
+                            answer: shape.views[view]
+                        });
+                    } else {
+                        // For count questions
+                        questions.push({
+                            type: 'count',
+                            shape: shape,
+                            answer: shape.count
+                        });
+                    }
+                }
+                
+                // Shuffle questions for variety
+                questions = questions.sort(() => Math.random() - 0.5);
+            }
+            
+            function loadQuestion() {
+                // Clear existing
+                clearInterval(currentTimer);
+                shapeContainer.innerHTML = '';
+                optionsContainer.innerHTML = '';
+                feedbackDisplay.innerHTML = '';
+                nextQuestionBtn.style.display = 'none';
+                
+                // Reset rotation and view
+                rotationEnabled = false;
+                currentView = 'front';
+                updateViewButtons();
+                
+                hintBtn.textContent = 'İpucu: Yapıyı Döndür';
+                hintBtn.classList.add('btn-warning');
+                hintBtn.classList.remove('btn-success');
+                
+                // Update level display
+                levelDisplay.textContent = `Seviye ${currentQuestionIndex + 1}/${numberOfQuestions}`;
+                
+                // Get current question
+                const question = questions[currentQuestionIndex];
+                questionType = question.type;
+                
+                // Create the shape
+                createShape(question.shape);
+                
+                // Set question text
+                if (question.type === 'view') {
+                    const viewNames = {
+                        'front': 'ön',
+                        'side': 'sağ',
+                        'top': 'üst',
+                        'back': 'arka',
+                        'left': 'sol'
+                    };
+                    questionText.textContent = `Yapının ${viewNames[question.view]} görünümünde kaç birim kare vardır?`;
+                } else {
+                    questionText.textContent = 'Bu yapı kaç birim küpten oluşmaktadır?';
+                }
+                
+                // Create options
+                createOptions(question);
+                
+                // Set timer based on difficulty
+                switch (difficultyLevel) {
+                    case 'easy':
+                        timerValue = 45;
+                        break;
+                    case 'medium':
+                        timerValue = 30;
+                        break;
+                    case 'hard':
+                        timerValue = 20;
+                        break;
+                }
+                
+                timerDisplay.textContent = timerValue;
+                questionStartTime = Date.now();
+                
+                currentTimer = setInterval(function() {
+                    timerValue--;
+                    timerDisplay.textContent = timerValue;
+                    
+                    if (timerValue <= 5) {
+                        timerDisplay.style.color = 'red';
+                    } else {
+                        timerDisplay.style.color = 'black';
+                    }
+                    
+                    if (timerValue <= 0) {
+                        clearInterval(currentTimer);
+                        handleAnswer(null, question.answer);
+                    }
+                }, 1000);
+            }
+            
+            function createShape(shape) {
+                currentShape = shape;
+                
+                // Reset container and set initial transform
+                shapeContainer.innerHTML = '';
+                updateShapeView();
+                
+                // Add cubes to container
+                shape.cubes.forEach((cube, index) => {
+                    const cubeElement = document.createElement('div');
+                    cubeElement.classList.add('cube');
+                    
+                    // Position the cube (scaled up for visibility)
+                    cubeElement.style.transform = `translate3d(${(cube.x - 1) * 50}px, ${(cube.y - 1) * 50}px, ${(cube.z - 1) * 50}px)`;
+                    
+                    // Create faces
+                    const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+                    faces.forEach(face => {
+                        const faceElement = document.createElement('div');
+                        faceElement.classList.add('cube-face', `face-${face}`);
+                        cubeElement.appendChild(faceElement);
+                    });
+                    
+                    shapeContainer.appendChild(cubeElement);
+                });
+            }
+            
+            function updateShapeView() {
+                let transformValue = '';
+                
+                switch (currentView) {
+                    case 'front':
+                        transformValue = 'rotateX(0deg) rotateY(0deg)';
+                        break;
+                    case 'side':
+                        transformValue = 'rotateX(0deg) rotateY(-90deg)';
+                        break;
+                    case 'back':
+                        transformValue = 'rotateX(0deg) rotateY(180deg)';
+                        break;
+                    case 'left':
+                        transformValue = 'rotateX(0deg) rotateY(90deg)';
+                        break;
+                    case 'top':
+                        transformValue = 'rotateX(-90deg) rotateY(0deg)';
+                        break;
+                }
+                
+                shapeContainer.style.transform = transformValue;
+            }
+            
+            function updateViewButtons() {
+                document.querySelectorAll('.view-btn').forEach(button => {
+                    button.classList.remove('active-view');
+                    if (button.dataset.view === currentView) {
+                        button.classList.add('active-view');
+                    }
+                });
+            }
+            
+            function createOptions(question) {
+                const answer = question.answer;
+                const options = [];
+                
+                // Include the correct answer
+                options.push(answer);
+                
+                // Generate other options
+                while (options.length < 4) {
+                    // For view questions, options should be reasonable
+                    let option;
+                    if (question.type === 'view') {
+                        // For view questions, options are in the range of +/- 2 from the correct answer
+                        option = answer + Math.floor(Math.random() * 5) - 2;
+                        if (option <= 0) option = 1 + Math.floor(Math.random() * 3);
+                    } else {
+                        // For count questions, options are in the range of +/- 3 from the correct answer
+                        option = answer + Math.floor(Math.random() * 7) - 3;
+                        if (option <= 0) option = 1 + Math.floor(Math.random() * 4);
+                    }
+                    
+                    if (!options.includes(option)) {
+                        options.push(option);
+                    }
+                }
+                
+                // Shuffle options
+                const shuffledOptions = [...options].sort(() => Math.random() - 0.5);
+                
+                // Create option buttons
+                shuffledOptions.forEach(option => {
+                    const optionBtn = document.createElement('button');
+                    optionBtn.classList.add('option-btn');
+                    optionBtn.textContent = option;
+                    
+                    optionBtn.addEventListener('click', function() {
+                        handleAnswer(option, answer);
+                    });
+                    
+                    optionsContainer.appendChild(optionBtn);
+                });
+            }
+            
+            function handleAnswer(selectedOption, correctAnswer) {
+                clearInterval(currentTimer);
+                
+                // Disable option buttons
+                const optionButtons = document.querySelectorAll('.option-btn');
+                optionButtons.forEach(button => {
+                    button.disabled = true;
+                    
+                    if (parseInt(button.textContent) === correctAnswer) {
+                        button.style.backgroundColor = '#2ecc71';
+                        button.style.color = 'white';
+                    }
+                });
+                
+                // Calculate points based on time taken and difficulty
+                let timeBonus = 0;
+                const timeTaken = (Date.now() - questionStartTime) / 1000;
+                
+                // Show feedback
+                if (selectedOption === correctAnswer) {
+                    // Correct answer
+                    let difficultyMultiplier = 1;
+                    switch (difficultyLevel) {
+                        case 'easy': difficultyMultiplier = 1; break;
+                        case 'medium': difficultyMultiplier = 1.5; break;
+                        case 'hard': difficultyMultiplier = 2; break;
+                    }
+                    
+                    // Time bonus for faster answers
+                    if (timeTaken < 5) {
+                        timeBonus = 3 * difficultyMultiplier;
+                    } else if (timeTaken < 10) {
+                        timeBonus = 2 * difficultyMultiplier;
+                    } else if (timeTaken < 15) {
+                        timeBonus = 1 * difficultyMultiplier;
+                    }
+                    
+                    const pointsEarned = Math.round((10 + timeBonus) * difficultyMultiplier);
+                    
+                    feedbackDisplay.innerHTML = `<span class="correct">Doğru! +${pointsEarned} puan kazandınız.</span>`;
+                    score += pointsEarned;
+                    correctAnswers++;
+                    
+                    // Update current player's score in multiplayer mode
+                    if (gameMode === 'multi') {
+                        playerScores[players[currentPlayerIndex]] += pointsEarned;
+                    }
+                } else {
+                    // Wrong answer
+                    feedbackDisplay.innerHTML = '<span class="incorrect">Yanlış! Doğru cevap: ' + correctAnswer + '</span>';
+                }
+                
+                // Update score display
+                if (gameMode === 'single') {
+                    scoreDisplay.textContent = score;
+                } else {
+                    scoreDisplay.textContent = playerScores[players[currentPlayerIndex]];
+                }
+                
+                // Show next question button
+                nextQuestionBtn.style.display = 'inline-block';
+                
+                // If multiplayer, move to next player
+                if (gameMode === 'multi') {
+                    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+                    updatePlayerDisplay();
+                }
+                
+                // Auto advance if it's the last question
+                if (currentQuestionIndex === questions.length - 1) {
+                    setTimeout(function() {
+                        endGame();
+                    }, 2000);
+                }
+            }
+            
+            function endGame() {
+                clearInterval(currentTimer);
+                
+                // Display results
+                totalQuestionsDisplay.textContent = numberOfQuestions;
+                correctAnswersDisplay.textContent = correctAnswers;
+                
+                if (gameMode === 'single') {
+                    finalScoreDisplay.textContent = score;
+                    playerResultsDisplay.style.display = 'none';
+                } else {
+                    playerResultsDisplay.style.display = 'block';
+                    playerResultsDisplay.innerHTML = '';
+                    
+                    // Sort players by score
+                    const sortedPlayers = [...players].sort((a, b) => playerScores[b] - playerScores[a]);
+                    
+                    // Display player scores
+                    sortedPlayers.forEach((player, index) => {
+                        const playerItem = document.createElement('div');
+                        playerItem.classList.add('player-score-item');
+                        
+                        if (index === 0) {
+                            playerItem.classList.add('winner');
+                        }
+                        
+                        playerItem.innerHTML = `
+                            <span>${index + 1}. ${player}</span>
+                            <span>${playerScores[player]} puan</span>
+                        `;
+                        
+                        playerResultsDisplay.appendChild(playerItem);
+                    });
+                }
+                
+                showScreen(resultsScreen);
+            }
+            
+            // Initialize the game on load
+            showScreen(startScreen);
+        });
+    </script>
+</body>
+</html>
